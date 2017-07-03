@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang=" en">
+
+<head>
+      <title>Calculator</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link href="css/style.css" rel="stylesheet">
+      <link href="css/animation.css" rel="stylesheet">
+</head>
+
+<body>
+      <div id="calculator">
+            <div id="display">
+                  <div class="">
+                        <input type="text" readonly/>
+                  </div>
+                  <div id="board" class="">
+                        <span data-key="c">c</span>
+                        <span data-key="a">a</span>
+                        <span data-key="s">s</span>
+                        <span data-key="i">i</span>
+                        <span data-key="o">o</span>
+
+                  </div>
+            </div>
+            <div class="keypad">
+                  <div class="keyrow">
+                        <div class="key key-2 operator clear">
+                              CLEAR
+                        </div>
+
+                        <div id="backspace" class="key key-1 operator">
+                              )
+                        </div>
+                        <div id="power" class="key key-1  operator">
+                              ON<sup>OFF<sup>
+            </div>
+         </div>
+         <div class="keyrow">
+            <div class="key key-1 operator">
+               1/x
+            </div>
+            <div data-operator="^" class="key key-1 operator">
+               ^
+            </div>
+            <div class="key key-1 operator">
+               %
+            </div>
+            <div data-operator="/" class="key key-1 operator">
+               /
+            </div>
+         </div>
+         <div class="keyrow">
+            <div data-key="7" class="key key-1 operand">
+               7
+            </div>
+            <div data-key="8" class="key key-1 operand">
+               8
+            </div>
+            <div data-key="9" class="key key-1 operand">
+               9
+            </div>
+            <div data-operator="*" class="key key-1 operator">
+               *
+            </div>
+         </div>
+         <div class="keyrow">
+            <div data-key="4" class="key key-1 operand">
+               4
+            </div>
+            <div data-key="5" class="key key-1 operand">
+               5
+            </div>
+            <div data-key="6" class="key key-1 operand">
+               6
+            </div>
+            <div data-operator="-" class="key key-1 operator">
+               - </div>
+         </div>
+         <div class="keyrow">
+            <div data-key="1" class="key key-1 operand">
+               1
+            </div>
+            <div data-key="2" class="key key-1 operand">
+               2
+            </div>
+            <div data-key="3" class="key key-1 operand">
+               3
+            </div>
+            <div data-operator="+" class="key key-1 operator">
+               +
+            </div>
+         </div>
+         <div class="keyrow">
+            <div data-key="0" class="key key-2 operand">
+               0
+            </div>
+            <div class="key key-1 operand">
+               .
+            </div>
+            <div class="key key-1 equal">
+               =
+            </div>
+         </div>
+      </div>
+   </div>
+</body>
+<script>
+      var isPower = false;
+      var power = document.querySelector("#power");
+      var backspace = document.querySelector("#backspace");
+      var operands = document.querySelectorAll(".operand");
+      var board = document.querySelector("#board");
+      var equal = document.querySelector(".equal")
+      var clear = document.querySelector(".clear")
+      var display = document.querySelector("input[type='text']");
+      var operators = document.querySelectorAll("div.operator[data-operator]")
+      var operand1 = 0;
+      var operand2 = 0;
+      var operator = " "
+      var result = 0;
+      var isresult = false;
+
+      function handleEqual(e) {
+            operand2 = parseFloat(display.value.trim());
+            switch (operator) {
+                  case "+":
+                        display.value = format((operand1 + operand2))
+
+                        break;
+                  case "-":
+                        display.value = format((operand1 - operand2))
+
+                        break;
+                  case "*":
+                        display.value = format((operand1 * operand2))
+
+                        break;
+                  case "/":
+                        display.value = format((operand1 / operand2))
+
+                        break;
+                  case "^":
+                        display.value = format(Math.pow(operand1, operand2))
+
+                        break;
+            }
+            isresult = true;
+
+      }
+      function format(val) {
+            console.log(val)
+            console.log(val.toString().length)
+            return val.toString().length > 10 ? "Overflow" : val
+      }
+      function handlePower(e) {
+            if (isPower) display.value = ""; isPower = false;
+            board.classList.add("playanim")
+
+      }
+
+      function handleOperand(e) {
+            //handle operand if only calculator is powered
+            if (!isPower) return;
+            display.value = handleTextAreaChange(display.value) + e.target.innerText
+
+            console.log(e.target.innerText);
+      }
+
+      function handleOperator(e) {
+             if (!isPower) return;
+            operand1 = parseFloat(display.value.trim());
+            operator = e.target.innerText;
+            handleClear();
+
+      }
+
+      function handleClear() {
+            display.value = ""
+      }
+
+      function handleTextAreaChange(e) {
+            /* var len = ++display.value.trim().length
+             if (len >= 10) display.value = display.value.substr(0, 9);
+             return;*/
+            if (e.length < 10) return e;
+            return e.substr(0, 9)
+      }
+
+      function handleKeys(e) {
+            var key = document.querySelector("div[data-key='" + e.key + "']")
+            if (key) {
+                  handleTextAreaChange();
+                  display.value += e.key
+                  console.log(e.key)
+                  console.log("length: " + display.value.trim().length)
+            }
+      }
+      function handleBackspace(e) {
+            if (typeof display.value === "number") {
+                  display.value = display.value.substr(0, display.value.length - 1);
+            } else {
+                  handleClear()
+            }
+
+      }
+      operators.forEach(function (operator) {
+            operator.addEventListener("click", handleOperator)
+      })
+
+      operands.forEach(function (operand) {
+            operand.addEventListener("click", handleOperand)
+      })
+
+
+      // window.addEventListener("keydown", handleKeys);
+      equal.addEventListener("click", handleEqual);
+      clear.addEventListener("click", handleClear)
+      power.addEventListener("click", handlePower)
+      backspace.addEventListener("click", handleBackspace);
+      window.addEventListener("animationend", function (e) {
+            if (e.animationName !== "board") return;
+            e.target.classList.remove("playanim")
+            //toggle the isPower variable to true only after the animation is done
+            isPower = !isPower;
+      })
+</script>
+
+</html>
